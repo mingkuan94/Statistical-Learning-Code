@@ -1,0 +1,39 @@
+Nonlinear Models
+=================
+Explore the use of nonlinear models using some tools in R.
+
+```{r}
+require(ISLR)
+attach(Wage)
+```
+
+Polynomials
+-------------
+First we will use polynomials and focus on a single predictor age: (They are orthogonal polynomials)
+```{r}
+fit = lm(wage~poly(age,4), data=Wage)
+summary(fit)
+```
+
+Lets make a plot of the fitted function, along with the standard errors of the fit.
+```{r fig.width=7, fig.height=6}
+agelims = range(age)
+age.grid = seq(from=agelims[1], to=agelims[2])
+preds = predict(fit, newdata=list(age=age.grid),se=TRUE)
+se.bands = cbind(preds$fit+2*preds$se, preds$fit-2*preds$se)
+plot(age,wage,col='darkgrey')
+lines(age.grid, preds$fit, lwd=2,col='blue')
+matlines(age.grid,se.bands,col='blue',lty=2)
+```
+
+There are other more direct ways of doing this in R. For example,
+```{r}
+fita = lm(wage~age+I(age^2)+I(age^3)+I(age^4),data=Wage)
+summary(fita)
+```
+
+The coefficients are different to those we got before! However the fits are the same:
+```{r}
+plot(fitted(fit),fitted(fita))
+```
+
